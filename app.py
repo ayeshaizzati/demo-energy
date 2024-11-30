@@ -1,14 +1,13 @@
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
+from src import consumption_patterns
 
 google_maps_api_key = "AIzaSyCe9CIjgjUMp-Wdxb95plgkp1ywtG81a5g"
 
 st.set_page_config(layout="wide")
 
-st.title('Hello, Streamlit!')
-
-st.write('This is your first Streamlit app')
+st.title('UBC Smart City Data Dashboard!')
 
 user_input = st.text_input("Enter parameters:")
 st.write("Energy waste:", user_input + "000")
@@ -54,41 +53,74 @@ st.markdown(
 
 )
 
-map_html = f"""
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Google Maps</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key={google_maps_api_key}&callback=initMap" async defer></script>
-    <style>
-        #map {{
-            height: 500px;  /* Set the height of the map */
-            width: 100%;    /* Set the width of the map */
-        }}
-    </style>
-    <script>
-        function initMap() {{
-            var ubc = {{ lat: 49.2606, lng: -123.2460 }};  // UBC coordinates
-            var map = new google.maps.Map(document.getElementById('map'), {{
-                zoom: 15,
-                center: ubc
-            }});
-            var marker = new google.maps.Marker({{
-                position: ubc,
-                map: map,
-                title: 'UBC'
-            }});
-        }}
-    </script>
-</head>
-<body>
-    <div id="map"></div>
-</body>
-</html>
-"""
+# map_html = f"""
+# <!DOCTYPE html>
+# <html>
+# <head>
+#     <title>Google Maps</title>
+#     <script src="https://maps.googleapis.com/maps/api/js?key={google_maps_api_key}&callback=initMap" async defer></script>
+#     <style>
+#         #map {{
+#             height: 500px;  /* Set the height of the map */
+#             width: 100%;    /* Set the width of the map */
+#         }}
+#     </style>
+#     <script>
+#         function initMap() {{
+#             var ubc = {{ lat: 49.2606, lng: -123.2460 }};  // UBC coordinates
+#             var map = new google.maps.Map(document.getElementById('map'), {{
+#                 zoom: 15,
+#                 center: ubc
+#             }});
+#             var marker = new google.maps.Marker({{
+#                 position: ubc,
+#                 map: map,
+#                 title: 'UBC'
+#             }});
+#         }}
+#     </script>
+# </head>
+# <body>
+#     <div id="map"></div>
+# </body>
+# </html>
+# """
 
-# Render the HTML in Streamlit
-st.components.v1.html(map_html, height=550)
+# # Render the HTML in Streamlit
+# st.components.v1.html(map_html, height=550)
 
 # Render the map with increased height
 st_folium(map, width=2000, height=800)  # Adjusted height for the Folium map
+
+
+df_consumption = consumption_patterns.generate_data()
+
+# Initialize session state for toggles
+if "visibility" not in st.session_state:
+    st.session_state.visibility = {
+        "Water Consumption (m³)": True,
+        "Electricity Consumption (kWh)": True,
+        "Thermal Power Consumption (kW)": True
+    }
+
+
+# Define button columns
+columns = ["Water Consumption (m³)", "Electricity Consumption (kWh)", "Thermal Power Consumption (kW)"]
+buttons = st.columns(len(columns))
+
+# Toggle visibility state with buttons
+for i, col in enumerate(columns):
+    if buttons[i].button(f"Toggle {col}"):
+        st.session_state.visibility[col] = not st.session_state.visibility[col]
+
+# Collect columns to display based on visibility state
+columns_to_plot = ["Year"]  # Always include the Year column
+for col in columns:
+    if st.session_state.visibility[col]:
+        columns_to_plot.append(col)
+
+# Ensure there is at least one data column selected
+if len(columns_to_plot) > 1:
+    st.line_chart(df_consumption[columns_to_plot].set_index("Year"))
+else:
+    st.write("Please toggle at least one column to display data.")
