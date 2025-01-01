@@ -34,8 +34,6 @@ for building in buildings:
         icon=folium.Icon(color="blue", icon="info-sign")
     ).add_to(map)
 
-st.title("UBC Energy Usage Map")
-
 st.markdown(
     """
     <style>
@@ -49,8 +47,6 @@ st.markdown(
     </style>
     """,
     unsafe_allow_html=True,
-
-
 )
 
 # map_html = f"""
@@ -86,11 +82,13 @@ st.markdown(
 # </html>
 # """
 
-# # Render the HTML in Streamlit
 # st.components.v1.html(map_html, height=550)
 
-# Render the map with increased height
-st_folium(map, width=2000, height=800)  # Adjusted height for the Folium map
+
+with st.container():
+    st.subheader("UBC Energy Usage Map")
+    st_folium(map, width=1200, height=600)
+
 
 
 df_consumption = consumption_patterns.generate_data()
@@ -104,22 +102,18 @@ if "visibility" not in st.session_state:
     }
 
 
-# Define button columns
 columns = ["Water Consumption (m³)", "Electricity Consumption (kWh)", "Thermal Power Consumption (kW)"]
 buttons = st.columns(len(columns))
 
-# Toggle visibility state with buttons
 for i, col in enumerate(columns):
     if buttons[i].button(f"Toggle {col}"):
         st.session_state.visibility[col] = not st.session_state.visibility[col]
 
-# Collect columns to display based on visibility state
-columns_to_plot = ["Year"]  # Always include the Year column
+columns_to_plot = ["Year"]  
 for col in columns:
     if st.session_state.visibility[col]:
         columns_to_plot.append(col)
 
-# Ensure there is at least one data column selected
 if len(columns_to_plot) > 1:
     st.line_chart(df_consumption[columns_to_plot].set_index("Year"))
 else:
