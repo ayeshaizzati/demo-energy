@@ -3,49 +3,23 @@ from data import load_data
 import pandas as pd
 
 st.set_page_config(layout="wide")
-# Custom CSS for sidebar styling and larger image
-st.markdown("""
-    <style>
-    /* Style the sidebar */
-    [data-testid="stSidebar"] { /* Dark blue-gray background */
-        padding: 20px 20px 40px 20px;  /* Increased bottom padding for more space */
-    }
-    /* Style navigation links */
-    [data-testid="stSidebar"] .css-17lntkn a {
-        color: #0055b7;  /* UBC darker blue */
-        font-size: 18px;
-        padding: 10px;
-        border-radius: 5px;
-        display: block;
-        text-decoration: none;
-    }
-    [data-testid="stSidebar"] .css-17lntkn a:hover {
-        background-color: #e9ecef;  /* Light hover effect */
-        color: #003087;
-    }
-    /* Make sidebar image full-width and larger */
-    [data-testid="stSidebar"] img {
-        width: 100% !important;  /* Full sidebar width */
-        height: 200px;  /* Set a specific height */
-        object-fit: cover;  /* Crop to fit, no stretching */
-        display: block;  /* Ensure proper rendering */
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Load custom CSS from external file
+with open("styles.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Sidebar content
 with st.sidebar:
-    st.markdown("---")  # Divider for separation
-    st.image("media/Logo1.png")  # Image will use CSS styling
-df = load_data("./data/weather.csv")
+    st.image("media/UBCSCLogo.png")  # Image will use CSS styling
 
+# Importing data
+df = load_data("./data/weather.csv")
 df['date'] = pd.to_datetime(df['date'])
 df = df.sort_values('date', ascending=True).reset_index(drop=True)
 
 # === HEADER ===
 st.markdown("""
     <style>
-        .forecast-title { font-size: 40px; font-weight: 700; margin-bottom: 0px; }
+        .forecast-title { font-size: 40px; font-weight: 700; margin-bottom: 0px; text-align: center; }
         .forecast-caption { color: gray; margin-top: 0px; margin-bottom: 30px; }
 
         .card-container {

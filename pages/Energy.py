@@ -7,52 +7,34 @@ from data import load_data
 import plotly.express as px
 import numpy as np
 
-st.set_page_config(page_title="Energy Building Model", layout="wide")
+st.set_page_config(page_title="Energy Building Database", layout="centered")
 
-# Custom CSS for sidebar styling and larger image
-st.markdown("""
-    <style>
-    /* Style the sidebar */
-    [data-testid="stSidebar"] { /* Dark blue-gray background */
-        padding: 20px 20px 40px 20px;  /* Increased bottom padding for more space */
-    }
-    /* Style navigation links */
-    [data-testid="stSidebar"] .css-17lntkn a {
-        color: #0055b7;  /* UBC darker blue */
-        font-size: 18px;
-        padding: 10px;
-        border-radius: 5px;
-        display: block;
-        text-decoration: none;
-    }
-    [data-testid="stSidebar"] .css-17lntkn a:hover {
-        background-color: #e9ecef;  /* Light hover effect */
-        color: #003087;
-    }
-    /* Make sidebar image full-width and larger */
-    [data-testid="stSidebar"] img {
-        width: 100% !important;  /* Full sidebar width */
-        height: 200px;  /* Set a specific height */
-        object-fit: cover;  /* Crop to fit, no stretching */
-        display: block;  /* Ensure proper rendering */
-    }
-    /* Style for building image gallery */
-    .building-image {
-        width: 100%;
-        border-radius: 5px;
-        margin-bottom: 10px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Load custom CSS from external file
+with open("styles.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 # Sidebar content
 with st.sidebar:
-    st.markdown("---")  # Divider for separation
-    st.image("media/Logo1.png")  # Image will use CSS styling
+    st.image("media/UBCSCLogo.png")  # Image will use CSS styling
 
 # Loading csv data
 df_consumption = load_data("./data/building_consumption.csv")
 df_buildings = load_data("./data/buildings.csv")
+
+
+# Page title and header
+
+st.markdown("""
+<div style='text-align: center; line-height: 1.1; padding: 0; margin: 10;'>
+    <div style='font-size: 1.5rem; margin-bottom: 15px;'>UBC Smart City</div>
+    <div style='font-size: 2.5rem; font-weight: bold; margin-bottom: 50px;'>Energy Building Model</div>
+</div>
+""", unsafe_allow_html=True)
+
+# Initialization of the map
+ubc_latitude = 49.2606
+ubc_longitude = -123.2460
+map = folium.Map(location=[ubc_latitude, ubc_longitude], zoom_start=15, tiles="CartoDB Positron")
 
 # Dictionary mapping building names to their respective images
 building_images = {
@@ -66,13 +48,6 @@ building_images = {
     "Aquatic Centre": "aquatic.jpeg",
     "Alumni Centre": "alumni.jpeg"
 }
-
-st.title("UBC Smart City")
-st.markdown("## Energy Building Model")
-# Initialization of the map
-ubc_latitude = 49.2606
-ubc_longitude = -123.2460
-map = folium.Map(location=[ubc_latitude, ubc_longitude], zoom_start=15, tiles="CartoDB Positron")
 
 def display_charts(building):
     st.markdown(f"## {building}")

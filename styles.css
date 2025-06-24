@@ -1,0 +1,27 @@
+/* Style the sidebar */
+[data-testid="stSidebar"] {
+    padding: 20px 20px 40px 20px;
+}
+
+/* Style navigation links */
+[data-testid="stSidebar"] .css-17lntkn a {
+    color: #0055b7;
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 5px;
+    display: block;
+    text-decoration: none;
+}
+
+[data-testid="stSidebar"] .css-17lntkn a:hover {
+    background-color: #e9ecef;
+    color: #003087;
+}
+
+/* Make sidebar image full-width and larger */
+[data-testid="stSidebar"] img {
+    width: 100% !important;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
